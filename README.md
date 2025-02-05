@@ -6,7 +6,7 @@ This repository contains the implementation of an email thread summarization too
 - Summarization using a two-layer T5 model.
 - Preprocessing pipeline for cleaning and structuring raw email data.
 - Fine-tuned T5 model trained on the *Email Thread Summary* dataset.
-- Evaluation metrics, including ROUGE, G-Eval, and SummEval, for assessing summary quality.
+- Evaluation metrics, including ROUGE, METEOR, and SummEval for assessing summary quality.
 - Multilingual translation of generated summaries for global accessibility.
 
 ## Usage
@@ -24,7 +24,7 @@ We use the *Email Thread Summary* dataset from Hugging Face: https://huggingface
 If you use this repository, please cite:
 ```bibtex
 @misc{EmailThreadSummarization2024,
-  author = {Srikitha Kandra, Venkata Tejaswi Kalla, Tejaswi Samineni},
+  author = {Venkata Tejaswi Kalla, Srikitha Kandra, Tejaswi Samineni},
   title = {Email Thread Summarization},
   year = {2024},
   url = {https://github.com/SrikithaKandra/EmailThreadSummarization}
