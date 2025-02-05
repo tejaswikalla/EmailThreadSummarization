@@ -27,7 +27,7 @@ If you use this repository, please cite:
   author = {Venkata Tejaswi Kalla, Srikitha Kandra, Tejaswi Samineni},
   title = {Email Thread Summarization},
   year = {2024},
-  url = {https://github.com/SrikithaKandra/EmailThreadSummarization}
+  url = {https://github.com/tejaswikalla/EmailThreadSummarization}
 }
 ```
 
