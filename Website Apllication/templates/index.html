@@ -1,0 +1,285 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Email Thread Summarization</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<!-- Correct link to CSS file using url_for -->
+		<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/main.css') }}" />
+		<noscript><link rel="stylesheet" href="{{ url_for('static', filename='assets/css/noscript.css') }}" /></noscript>
+	</head>	
+	<body class="is-preload">
+
+		<!-- Sidebar -->
+			<section id="sidebar">
+				<div class="inner">
+					<nav>
+						<ul>
+							<li><a href="#intro">Welcome</a></li>
+							<li><a href="#one">Summarization</a></li>
+							<li><a href="#two">Translation</a></li>
+						</ul>
+					</nav>
+				</div>
+			</section>
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Intro -->
+					<section id="intro" class="wrapper style1 fullscreen fade-up">
+						<div class="inner">
+							<h1>Email Thread Summarization</h1>
+							<p>Summarize lengthy email threads in seconds. Upload your file or paste your email text to get a concise summary</a>.</p>
+							<ul class="actions">
+								<li><a href="#one" class="button scrolly">Learn more</a></li>
+							</ul>
+						</div>
+					</section>
+
+				<!-- Summarization -->
+				<section id="one" class="wrapper style1 fullscreen fade-up">
+					<div class="inner">
+						<h2>Summarization</h2>
+						<p>Upload or paste your email thread below to generate a summary.</p>
+				
+						<!-- Form for summarization -->
+						<form id="summarization-form" method="POST" enctype="multipart/form-data">
+							<!-- Textarea for email thread input -->
+							<div class="fields">
+								<div class="field">
+									<label for="email_text">Email Thread</label>
+									<textarea id="email_text" name="email_text" rows="5" class="form-control" placeholder="Paste your email thread here..."></textarea>
+								</div>
+								<!-- File upload input -->
+								<div class="field">
+									<label for="file">Upload Email Thread (pdf file)</label>
+									<input type="file" id="file" name="file" class="form-control">
+								</div>
+							</div>
+				
+							<!-- Submit button -->
+							<ul class="actions">
+								<li><button type="submit" class="button">Generate Summary</button></li>
+							</ul>
+						</form>
+						<script>
+							// JavaScript to handle form submission and summary generation
+							document.getElementById('summarization-form').addEventListener('submit', async (event) => {
+								event.preventDefault(); // Prevent form default submission behavior
+						
+								const formData = new FormData(event.target); // Collect form data
+								const response = await fetch('/summarize', { method: 'POST', body: formData }); // POST to backend
+						
+								const result = await response.json(); // Parse JSON response
+						
+								const summaryOutput = document.getElementById('summary-text'); // Select summary output container
+								if (result.error) {
+									summaryOutput.textContent = `Error: ${result.error}`; // Handle errors
+								} else {
+									summaryOutput.textContent = result.summary; // Display generated summary
+								}
+							});
+						</script>
+						
+				
+						<!-- Output for summary -->
+						<div id="summary-output" class="output-box">
+							<h3>Summary Output</h3>
+							<p id="summary-text">The summary will appear here once generated.</p>
+				
+							<!-- Language Dropdown for Translation -->
+							<div class="field">
+								<label for="translate-summary-language">Translate Summary:</label>
+								<select id="translate-summary-language" class="form-control">
+									<option value="" disabled selected>Select Language</option>
+									<option value="es">Spanish</option>
+									<option value="fr">French</option>
+									<option value="de">German</option>
+									<option value="zh">Chinese (Simplified)</option>
+									<option value="te">Telugu</option>
+									<option value="ta">Tamil</option>
+									<option value="hi">Hindi</option>
+									<option value="ar">Arabic</option>
+									<option value="ru">Russian</option>
+									<option value="ja">Japanese</option>
+									<option value="ko">Korean</option>
+									<option value="it">Italian</option>
+								</select>
+							</div>
+				
+							<!-- Translated Summary Output -->
+							<div id="translated-summary-output">
+								<h3>Translated Summary</h3>
+								<p id="translated-summary-text">Select a language to see the translated summary.</p>
+							</div>
+						</div>
+					</div>
+				
+					<script>
+						// JavaScript to handle form submission and summary generation
+						document.getElementById('summarization-form').addEventListener('submit', async (event) => {
+							event.preventDefault();
+				
+							const formData = new FormData(event.target);
+							const response = await fetch('/summarize', { method: 'POST', body: formData });
+							const result = await response.json();
+				
+							const summaryOutput = document.getElementById('summary-text');
+							if (result.error) {
+								summaryOutput.textContent = `Error: ${result.error}`;
+							} else {
+								summaryOutput.textContent = result.summary;
+							}
+						});
+				
+						// JavaScript to handle translation of the summary
+						document.getElementById('translate-summary-language').addEventListener('change', async (event) => {
+							const selectedLanguage = event.target.value;
+							const summaryText = document.getElementById('summary-text').textContent;
+				
+							if (!summaryText || summaryText === "The summary will appear here once generated.") {
+								alert('Please generate a summary before translating.');
+								return;
+							}
+				
+							const apiKey = 'AIzaSyDrkJ8-Pp7ZtY62bjtkEkyh3YaJq-lo31Q'; // Replace with your actual API key
+				
+							try {
+								const response = await fetch(`https://translation.googleapis.com/language/translate/v2?key=${apiKey}`, {
+									method: 'POST',
+									headers: { 'Content-Type': 'application/json' },
+									body: JSON.stringify({
+										q: summaryText,
+										target: selectedLanguage,
+										format: 'text'
+									})
+								});
+				
+								const result = await response.json();
+								const translatedSummaryOutput = document.getElementById('translated-summary-text');
+				
+								if (result.error) {
+									translatedSummaryOutput.textContent = `Error: ${result.error.message}`;
+								} else {
+									translatedSummaryOutput.textContent = result.data.translations[0].translatedText;
+								}
+							} catch (error) {
+								console.error('Error:', error);
+								document.getElementById('translated-summary-text').textContent = 'An error occurred during translation.';
+							}
+						});
+					</script>
+				</section>
+				
+				<!-- Translation -->
+					<section id="two" class="wrapper style3 fade-up">
+						<div class="inner">
+							<h2>Translation</h2>
+							<p>Paste the text below that you want to translate and select the target language.</p>
+							<!-- Form for translation -->
+							<form id="translation-form">
+								<div class="fields">
+									<!-- Textarea for input text -->
+									<div class="field">
+										<label for="input_text">Text to Translate</label>
+										<textarea id="input_text" name="input_text" rows="5" class="form-control" placeholder="Paste text here..."></textarea>
+									</div>
+									<!-- Dropdown for language selection -->
+									<div class="field">
+										<label for="target_language">Select Target Language</label>
+										<select id="target_language" name="target_language" class="form-control">
+											<option value="es">Spanish</option>
+											<option value="fr">French</option>
+											<option value="de">German</option>
+											<option value="zh">Chinese (Simplified)</option>
+											<option value="te">Telugu</option>
+											<option value="ta">Tamil</option>
+											<option value="hi">Hindi</option>
+											<option value="ar">Arabic</option>
+											<option value="ru">Russian</option>
+											<option value="ja">Japanese</option>
+											<option value="ko">Korean</option>
+											<option value="it">Italian</option>
+										</select>
+									</div>
+								</div>
+								<!-- Submit button -->
+								<ul class="actions">
+									<li><button type="submit" class="button">Translate</button></li>
+								</ul>
+							</form>
+							<!-- Output for translation -->
+							<div id="translation-output" class="output-box">
+								<h3>Translated Text</h3>
+								<p id="translated-text">The translated text will appear here once processed.</p>
+							</div>
+						</div>
+						<script>
+							// JavaScript to handle translation form submission
+							document.getElementById('translation-form').addEventListener('submit', async (event) => {
+								event.preventDefault();
+							
+								const inputText = document.getElementById('input_text').value;
+								const targetLanguage = document.getElementById('target_language').value;
+								const apiKey = 'AIzaSyDrkJ8-Pp7ZtY62bjtkEkyh3YaJq-lo31Q'; // Replace with your actual API key
+							
+								try {
+									const response = await fetch(`https://translation.googleapis.com/language/translate/v2?key=${apiKey}`, {
+										method: 'POST',
+										headers: { 'Content-Type': 'application/json' },
+										body: JSON.stringify({
+											q: inputText,
+											target: targetLanguage,
+											format: 'text'
+										})
+									});
+							
+									const result = await response.json();
+									const translationOutput = document.getElementById('translated-text');
+							
+									if (result.error) {
+										translationOutput.textContent = `Error: ${result.error.message}`;
+									} else {
+										translationOutput.textContent = result.data.translations[0].translatedText;
+									}
+								} catch (error) {
+									console.error('Error:', error);
+									document.getElementById('translated-text').textContent = 'An error occurred during translation.';
+								}
+							});
+						</script>
+						
+					</section>
+				
+
+		<!-- Footer -->
+			<footer id="footer" class="wrapper style1-alt">
+				<div class="inner">
+					<ul class="menu">
+						
+					</ul>
+				</div>
+			</footer>
+
+		<!-- Scripts -->
+			<!--<script src="templates/assets/js/jquery.min.js"></script>
+			<script src="templates/assets/js/jquery.scrollex.min.js"></script>
+			<script src="templates/assets/js/jquery.scrolly.min.js"></script>
+			<script src="templates/assets/js/browser.min.js"></script>
+			<script src="templates/assets/js/breakpoints.min.js"></script>
+			<script src="templates/assets/js/util.js"></script>
+			<script src="templates/assets/js/main.js"></script> -->
+			<!-- Link to JS files -->
+			<script src="{{ url_for('static', filename='assets/js/jquery.min.js') }}"></script>
+			<script src="{{ url_for('static', filename='assets/js/jquery.scrollex.min.js') }}"></script>
+			<script src="{{ url_for('static', filename='assets/js/jquery.scrolly.min.js') }}"></script>
+			<script src="{{ url_for('static', filename='assets/js/browser.min.js') }}"></script>
+			<script src="{{ url_for('static', filename='assets/js/breakpoints.min.js') }}"></script>
+			<script src="{{ url_for('static', filename='assets/js/util.js') }}"></script>
+			<script src="{{ url_for('static', filename='assets/js/main.js') }}"></script>	
+			
+			
+
+	</body>
+</html>
